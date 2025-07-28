@@ -6,9 +6,7 @@ What is Nagios-Mod-Gearman
 
 Nagios-Mod-Gearman is an easy way
 of distributing active Nagios checks across your network and
-increasing Nagios scalability. Nagios-Mod-Gearman can even help to reduce the
-load on a single Nagios host, because its much smaller and more
-efficient in executing checks.
+increasing Nagios scalability. Nagios-Mod-Gearman reduces load and provides distributed monitoring capabilities by assigning active checks to separate Worker systems.
 
  * Nagios-Mod-Gearman works with Nagios 4.5.x
 
