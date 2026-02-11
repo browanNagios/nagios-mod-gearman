@@ -74,6 +74,13 @@ LDFLAGS="${LDFLAGS} `pkg-config --libs openssl`"
 AC_CHECK_HEADERS([openssl/evp.h],,AC_MSG_ERROR([Compiling Nagios-Mod-Gearman requires openssl.h (hint: install libssl-dev pkg)]))
 
 ##############################################
+# check for sqlite3
+PKG_CHECK_MODULES([sqlite3], [sqlite3 >= 3])
+CFLAGS="${CFLAGS} `pkg-config --cflags sqlite3`"
+LDFLAGS="${LDFLAGS} `pkg-config --libs sqlite3`"
+AC_CHECK_HEADERS([sqlite3.h],,AC_MSG_ERROR([Compiling Nagios-Mod-Gearman requires sqlite3.h (hint: install libsqlite3-dev pkg)]))
+
+##############################################
 PKG_PROG_PKG_CONFIG()
 AC_ARG_WITH([systemd-dir],
      [AS_HELP_STRING([--with-systemd-dir=DIR], [Directory for systemd service files])],,

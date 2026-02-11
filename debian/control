@@ -3,7 +3,7 @@ Section: net
 Priority: extra
 Maintainer: Nagios Development Team <devteam@nagios.com>
 Build-Depends: debhelper (>= 10), automake, libtool, libgearman-dev (>= 1.1), libncurses5-dev,
-               libltdl-dev, help2man, dctrl-tools, libperl-dev, pkg-config, libssl-dev, openssl
+               libltdl-dev, help2man, dctrl-tools, libperl-dev, pkg-config, libssl-dev, openssl, libsqlite3-dev
 Standards-Version: 3.9.1
 Homepage: https://www.nagios.org/projects/nagios-mod-gearman/
 
@@ -27,7 +27,7 @@ Description: Event broker module to distribute service checks.
 
 Package: nagios-mod-gearman-worker
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, openssl
+Depends: ${shlibs:Depends}, ${misc:Depends}, openssl, libsqlite3-0
 Description: Worker agent for nagios-mod-gearman
  The worker agent for nagios-mod-geraman connects to a gearman job server,
  runs active Nagios service checks, and return the results.

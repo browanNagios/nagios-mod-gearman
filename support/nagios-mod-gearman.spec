@@ -9,10 +9,10 @@ Source0:       nagios-mod-gearman-%{version}.tar.gz
 Group:         Applications/Monitoring
 Summary:       Nagios Mod Gearman module for Nagios
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root-%(%{__id_u} -n)
-Requires:      libgearman, logrotate, openssl
+Requires:      libgearman, logrotate, openssl, sqlite
 BuildRequires: autoconf, automake, gcc-c++, pkgconfig, ncurses-devel
 BuildRequires: libtool, libtool-ltdl-devel, libevent-devel, openssl-devel
-BuildRequires: libgearman-devel
+BuildRequires: libgearman-devel, sqlite-devel
 Requires(pre,post): /sbin/ldconfig
 BuildRequires: gearmand
 BuildRequires: systemd
@@ -73,6 +73,7 @@ getent passwd nagios >/dev/null || \
 %config(noreplace) %{_sysconfdir}/nagios-mod-gearman/worker.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/nagios-mod-gearman
 
+%dir %attr(755,nagios,nagios) %{_sysconfdir}/nagios-mod-gearman
 %dir %attr(755,nagios,nagios) /run/nagios-mod-gearman-worker
 
 %{_bindir}/nagios-check-gearman

@@ -5,7 +5,9 @@ set -e
 case "$1" in
     configure)
         mkdir -p /etc/nagios-mod-gearman /var/log/nagios-mod-gearman/
+        chown nagios:nagios /etc/nagios-mod-gearman/
         chown nagios:nagios /var/log/nagios-mod-gearman/
+        chmod 755 /etc/nagios-mod-gearman/
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
