@@ -138,7 +138,7 @@ int run_check(char *processed_command, char **ret, char **err) {
      * and cmd must begin with a /. Otherwise "BLAH=BLUB cmd" would lead
      * to file not found errors
      */
-    if((*processed_command == '/' || *processed_command == '.') && strpbrk(processed_command,"!$^&*()~[]\\|{};<>?`") == NULL) {
+    if((*processed_command == '/' || *processed_command == '.') && strpbrk(processed_command,"!$^&*()~[]\\|{};<>?`\"'") == NULL) {
         /* use the fast execvp when there are no shell characters */
         gm_log( GM_LOG_TRACE, "using execvp, no shell characters found\n" );
 
@@ -552,43 +552,36 @@ int parse_command_line(char *cmd, char *argv[MAX_CMD_ARGS]) {
     for(parsed_cmd=cmd;isspace(*cmd);++cmd)
         ;
 
-    /* Parse command line into argv, compacting in-place. */
+    /* Parse command line. */
     while(*cmd&&(argc<MAX_CMD_ARGS-1)){
         argv[argc++]=parsed_cmd;
-
-        /* One argv token: keep reading across adjacent quoted/unquoted pieces
-         * until we hit unquoted whitespace (shell concatenation). */
-        while(*cmd && !isspace(*cmd)) {
-            if(*cmd == '\'') {
-                /* single quotes: literal until closing quote */
+        switch(*cmd){
+        case '\'':
+            while((*cmd)&&(*cmd!='\''))
+                *(parsed_cmd++)=*(cmd++);
+            if(*cmd)
                 ++cmd;
-                while(*cmd && *cmd != '\'')
-                    *(parsed_cmd++) = *(cmd++);
-                if(*cmd == '\'')
+            break;
+        case '"':
+            while((*cmd)&&(*cmd!='"')){
+                if((*cmd=='\\')&&cmd[1]&&strchr("\"\\\n",cmd[1]))
                     ++cmd;
-            }
-            else if(*cmd == '"') {
-                /* double quotes: allow \" \\ \n escapes like the old parser */
-                ++cmd;
-                while(*cmd && *cmd != '"') {
-                    if((*cmd == '\\') && cmd[1] && strchr("\"\\\n", cmd[1]))
-                        ++cmd;
-                    *(parsed_cmd++) = *(cmd++);
+                *(parsed_cmd++)=*(cmd++);
                 }
-                if(*cmd == '"')
+            if(*cmd)
+                ++cmd;
+            break;
+        default:
+            while((*cmd)&&!isspace(*cmd)){
+                if((*cmd=='\\')&&cmd[1])
                     ++cmd;
+                *(parsed_cmd++)=*(cmd++);
+                }
             }
-            else {
-                if((*cmd == '\\') && cmd[1])
-                    ++cmd;
-                *(parsed_cmd++) = *(cmd++);
-            }
-        }
-
         while(isspace(*cmd))
             ++cmd;
         *(parsed_cmd++)='\0';
-    }
+        }
     argv[argc]=NULL;
 
     return GM_OK;
