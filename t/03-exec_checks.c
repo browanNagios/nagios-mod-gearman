@@ -22,7 +22,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv, 
     char cmd[4096];
     char cwd[1024];
 
-    plan(76);
+    plan(85);
 
     /* set hostname and cwd */
     gethostname(hostname, GM_SMALLBUFSIZE-1);
@@ -51,6 +51,34 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv, 
     like(args[1], "blah", "parsing args cmd 2");
     like(args[2], "blub", "parsing args cmd 2");
     like(args[3], "foo", "parsing args cmd 2");
+
+    /*****************************************
+     * arg parsing: $ARG1$="-H host" (unquoted)
+     * Must split into distinct -H and hostname tokens for getopt.
+     */
+    strcpy(cmd, "/usr/local/nagios/libexec/check_dns -H benjaminwrowan.com");
+    parse_command_line(cmd, args);
+    like(args[0], "/usr/local/nagios/libexec/check_dns", "dns unquoted: binary");
+    is(args[1], "-H", "dns unquoted: -H flag");
+    is(args[2], "benjaminwrowan.com", "dns unquoted: hostname");
+    ok(args[3] == NULL, "dns unquoted: no extra args");
+
+    /*****************************************
+     * arg parsing: quoted hostname (forces shell today; should execvp after fix)
+     */
+    strcpy(cmd, "/usr/local/nagios/libexec/check_dns -H 'benjaminwrowan.com'");
+    parse_command_line(cmd, args);
+    like(args[0], "/usr/local/nagios/libexec/check_dns", "dns quoted: binary");
+    is(args[1], "-H", "dns quoted: -H flag");
+    is(args[2], "benjaminwrowan.com", "dns quoted: hostname without quotes");
+    ok(args[3] == NULL, "dns quoted: no extra args");
+
+    /*****************************************
+     * arg parsing: adjacent quote concatenation (shell behavior)
+     */
+    strcpy(cmd, "/bin/echo 'foo''bar'");
+    parse_command_line(cmd, args);
+    is(args[1], "foobar", "adjacent single quotes concatenate");
 
     /*****************************************
      * nagios-send-gearman 1
