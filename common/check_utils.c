@@ -164,7 +164,7 @@ int run_check(char *processed_command, char **ret, char **err) {
             sigprocmask(SIG_UNBLOCK, &mask, NULL);
 
             /* child process */
-           int devnull = open("/dev/null", O_RDONLY);
+            int devnull = open("/dev/null", O_RDONLY);
             if(devnull < 0) {
                 gm_log(GM_LOG_ERROR, "open /dev/null\n");
                 _exit(STATE_UNKNOWN);
